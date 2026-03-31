@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>✨ Kỷ Niệm Tình Yêu - Bản Giao Hưởng Trái Tim ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* tạo cảm giác cao cấp */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #1a0c0a, #2e1a16);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Nền hoa văn kim cương & ánh sáng */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.08"><path fill="none" stroke="%23ffd966" stroke-width="0.5" d="M20 20 L30 10 L40 20 L30 30 Z M70 70 L80 60 L90 70 L80 80 Z M45 45 L55 35 L65 45 L55 55 Z"/><circle cx="50" cy="50" r="2" fill="%23ffc107"/><circle cx="15" cy="85" r="1.5" fill="%23ffb347"/><circle cx="85" cy="15" r="1.8" fill="%23ffd966"/></svg>');
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* hiệu ứng ánh sáng lung linh */
+        .glow-orb {
+            position: fixed;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(231,84,62,0.2) 0%, rgba(255,215,0,0) 80%);
+            border-radius: 50%;
+            top: -20vh;
+            right: -30vw;
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb2 {
+            position: fixed;
+            bottom: -20vh;
+            left: -20vw;
+            width: 80vw;
+            height: 80vw;
+            background: radial-gradient(circle, rgba(255,130,90,0.15) 0%, rgba(255,100,50,0) 70%);
+            filter: blur(70px);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1350px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* card chính - phong cách kính mờ cao cấp */
+        .vip-card {
+            background: rgba(20, 12, 10, 0.65);
+            backdrop-filter: blur(14px);
+            border-radius: 3.5rem;
+            box-shadow: 0 35px 65px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 150, 0.3), 0 0 30px rgba(231, 84, 62, 0.2);
+            overflow: hidden;
+            padding: 2.5rem 2.2rem 3rem;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(255, 200, 150, 0.25);
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .vip-card { padding: 1.8rem 1.2rem 2.2rem; border-radius: 2.2rem; }
+        }
+
+        /* header lộng lẫy */
+        .royal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .crown-icon {
+            font-size: 3rem;
+            color: #ffd966;
+            text-shadow: 0 0 8px #ffaa33, 0 0 20px #ff6f4a;
+            animation: floatGlow 3s infinite alternate;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translateY(0px); text-shadow: 0 0 2px #ffaa66; }
+            100% { transform: translateY(-6px); text-shadow: 0 0 18px #ff7043, 0 0 6px #ffc107; }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFF3E0, #FFD3B5, #FFB38B);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            margin-top: 0.5rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .vip-sub {
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255, 215, 180, 0.2);
+            backdrop-filter: blur(4px);
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border-radius: 60px;
+            color: #ffddb0;
+            border: 1px solid rgba(255,180,100,0.5);
+            margin-top: 0.8rem;
+        }
+
+        /* counter sang trọng */
+        .counter-grid-vip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.8rem;
+            margin: 2.8rem 0 2rem;
+        }
+
+        .time-vip {
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.3rem 1rem;
+            min-width: 120px;
+            text-align: center;
+            border: 1px solid rgba(255, 160, 100, 0.5);
+            box-shadow: 0 15px 25px -12px black;
+            transition: transform 0.2s ease;
+        }
+        .time-vip:hover { transform: translateY(-5px); background: rgba(0,0,0,0.6); border-color: #ffb27a; }
+
+        @media (max-width: 550px) {
+            .counter-grid-vip { gap: 0.8rem; }
+            .time-vip { min-width: 75px; padding: 0.8rem 0.3rem; }
+        }
+
+        .time-number-vip {
+            font-size: 3.5rem;
+            font-weight: 800;
+            font-family: 'Inter', monospace;
+            background: linear-gradient(145deg, #FFC89C, #FF9F6E);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #ff6633;
+        }
+
+        .time-label-vip {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffcba4;
+            margin-top: 0.5rem;
+        }
+
+        /* thanh tiến trình kim cương */
+        .diamond-progress {
+            background: rgba(30, 18, 14, 0.7);
+            border-radius: 80px;
+            padding: 1.2rem 1.8rem;
+            margin: 1rem 0 2rem;
+            border: 1px solid rgba(255, 180, 100, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        .progress-header-vip {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: #ffcfaa;
+            margin-bottom: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .progress-bar-bg-vip {
+            background: #2c1b16;
+            border-radius: 50px;
+            height: 14px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px #00000055;
+        }
+
+        .progress-fill-vip {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff9766, #ff4d2e, #ffc857);
+            border-radius: 50px;
+            transition: width 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            box-shadow: 0 0 6px #ff9f6e;
+        }
+
+        /* milestones nâng cấp */
+        .milestones-vip {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.3rem 1.8rem;
+            margin: 1.8rem 0 2.2rem;
+            border-left: 6px solid #ffb347;
+            border-right: 1px solid rgba(255,160,80,0.3);
+        }
+
+        .milestones-vip h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffdfbf;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .milestone-list-vip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .milestone-diamond {
+            background: linear-gradient(125deg, #261b17, #1f1210);
+            border-radius: 80px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 180, 90, 0.6);
+            color: #ffe0c4;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 10px #00000033;
+            backdrop-filter: blur(2px);
+        }
+
+        .milestone-diamond i { color: #ffbc7a; }
+
+        /* picker sang trọng */
+        .date-picker-vip {
+            margin-top: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            border-top: 1px solid rgba(255, 170, 110, 0.4);
+            padding-top: 2rem;
+        }
+
+        .input-group-vip {
+            flex: 2;
+            min-width: 180px;
+        }
+        .input-group-vip label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #ffc8a2;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .input-group-vip input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(0, 0, 0, 0.6);
+            font-family: 'Inter', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #ffe0cf;
+            border: 1px solid #c77a5a;
+            transition: all 0.2s;
+        }
+        .input-group-vip input:focus {
+            outline: none;
+            border-color: #ff8a5c;
+            box-shadow: 0 0 0 3px rgba(255, 120, 70, 0.5);
+            background: #1f110e;
+        }
+
+        .btn-vip {
+            background: linear-gradient(95deg, #e7543e, #c73e24);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 16px #c73e2480;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-vip:hover { background: linear-gradient(95deg, #ff6248, #d93f24); transform: scale(1.02); box-shadow: 0 10px 22px #ff5a3880; }
+        .reset-vip { background: #3f2922; box-shadow: none; border: 1px solid #b97156; }
+        .reset-vip:hover { background: #5f3b30; transform: scale(0.98); }
+
+        .footer-vip {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #dbaa8a;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* hiệu ứng trái tim bay */
+        .floating-heart {
+            position: fixed;
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 99;
+            animation: floatUpLove 4s linear forwards;
+            opacity: 0.7;
+        }
+        @keyframes floatUpLove {
+            0% { transform: translateY(0) scale(0.6); opacity: 0.9; }
+            100% { transform: translateY(-120px) scale(1.3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="glow-orb"></div>
+<div class="glow-orb2"></div>
+
+<div class="container">
+    <div class="vip-card">
+        <div class="royal-header">
+            <div class="crown-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h1>Huyền Thoại Yêu Thương</h1>
+            <div class="vip-sub">
+                <i class="fas fa-gem"></i> Khoảnh khắc vĩnh cửu <i class="fas fa-infinity"></i>
+            </div>
+        </div>
+
+        <div class="counter-grid-vip" id="vipCounter">
+            <div class="time-vip"><div class="time-number-vip" id="vipDays">0</div><div class="time-label-vip">Ngày vàng</div></div>
+            <div class="time-vip"><div class="time-number-vip" id="vipHours">0</div><div class="time-label-vip">Giờ ngọc</div></div>
+            <div class="time-vip"><div class="time-number-vip" id="vipMinutes">0</div><div class="time-label-vip">Phút quý</div></div>
+            <div class="time-vip"><div class="time-number-vip" id="vipSeconds">0</div><div class="time-label-vip">Giây hồng</div></div>
+        </div>
+
+        <div class="diamond-progress">
+            <div class="progress-header-vip">
+                <span><i class="fas fa-chart-simple"></i> Hành trình kim cương</span>
+                <span id="vipProgressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg-vip">
+                <div class="progress-fill-vip" id="vipProgressFill"></div>
+            </div>
+            <div style="font-size: 0.7rem; margin-top: 9px; text-align: right; color:#eeb78b;">
+                <i class="fas fa-heart-circle-bolt"></i> Mỗi phần trăm — trái tim thăng hoa
+            </div>
+        </div>
+
+        <div class="milestones-vip">
+            <h3><i class="fas fa-star-of-life"></i> Cột mốc trái tim & kỷ niệm sắp tới</h3>
+            <div class="milestone-list-vip" id="vipMilestoneList">
+                <div class="milestone-diamond"><i class="fas fa-spinner fa-pulse"></i> Đang chiêm nghiệm...</div>
+            </div>
+        </div>
+
+        <div class="date-picker-vip">
+            <div class="input-group-vip">
+                <label><i class="far fa-calendar-alt"></i> NGÀY KHỞI NGUỒN YÊU</label>
+                <input type="date" id="vipStartDate" value="2024-01-01">
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-vip" id="vipUpdateBtn"><i class="fas fa-heart"></i> Cập nhật</button>
+                <button class="btn-vip reset-vip" id="vipResetBtn"><i class="fas fa-undo-alt"></i> Mặc định</button>
+            </div>
+        </div>
+        <div class="footer-vip">
+            <i class="fas fa-feather-alt"></i> Tình yêu là bản giao hưởng bất tận — mỗi giây là một nốt thăng hoa.
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- VIP CONFIG -----
+        const DEFAULT_VIP_START = "2024-01-01";  // Ngày yêu mặc định (có thể sửa theo ý bạn)
+        let startDateVIP = new Date(DEFAULT_VIP_START);
+        
+        // DOM
+        const daysVIP = document.getElementById('vipDays');
+        const hoursVIP = document.getElementById('vipHours');
+        const minutesVIP = document.getElementById('vipMinutes');
+        const secondsVIP = document.getElementById('vipSeconds');
+        const progressPercentVIP = document.getElementById('vipProgressPercent');
+        const progressFillVIP = document.getElementById('vipProgressFill');
+        const milestoneVIPList = document.getElementById('vipMilestoneList');
+        const startDateInputVIP = document.getElementById('vipStartDate');
+        const updateBtnVIP = document.getElementById('vipUpdateBtn');
+        const resetBtnVIP = document.getElementById('vipResetBtn');
+        
+        // helpers
+        function formatYMD(date) {
+            let y = date.getFullYear();
+            let m = String(date.getMonth() + 1).padStart(2,'0');
+            let d = String(date.getDate()).padStart(2,'0');
+            return `${y}-${m}-${d}`;
+        }
+        
+        function saveToLocal(date) {
+            localStorage.setItem('vipLoveStart', formatYMD(date));
+        }
+        
+        function loadSavedVIP() {
+            let saved = localStorage.getItem('vipLoveStart');
+            if(saved) {
+                let parsed = new Date(saved);
+                if(!isNaN(parsed.getTime())) {
+                    startDateVIP = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+                    startDateInputVIP.value = formatYMD(startDateVIP);
+                    return true;
+                }
+            }
+            startDateVIP = new Date(DEFAULT_VIP_START);
+            startDateInputVIP.value = DEFAULT_VIP_START;
+            saveToLocal(startDateVIP);
+            return true;
+        }
+        
+        // Tạo hiệu ứng trái tim bay ngẫu nhiên (vip)
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = ['❤️','💖','💗','✨','💝','🧡'][Math.floor(Math.random()*6)];
+            heart.style.left = Math.random() * 90 + '%';
+            heart.style.bottom = '-10px';
+            heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+            heart.style.position = 'fixed';
+            heart.style.pointerEvents = 'none';
+            document.body.appendChild(heart);
+            setTimeout(() => { if(heart && heart.remove) heart.remove(); }, 4000);
+        }
+        
+        let heartInterval = null;
+        function startRomanticHearts() {
+            if(heartInterval) clearInterval(heartInterval);
+            heartInterval = setInterval(() => {
+                if(Math.random() > 0.65) createFloatingHeart();
+            }, 1800);
+        }
+        
+        // Cập nhật timer chính
+        function updateVIPClock() {
+            const now = new Date();
+            const diff = now - startDateVIP;
+            if(diff < 0) {
+                daysVIP.innerText = '0'; hoursVIP.innerText = '00'; minutesVIP.innerText = '00'; secondsVIP.innerText = '00';
+                progressPercentVIP.innerText = '0%'; progressFillVIP.style.width = '0%';
+                return;
+            }
+            let totalSecs = Math.floor(diff / 1000);
+            let days = Math.floor(totalSecs / 86400);
+            let hours = Math.floor((totalSecs % 86400) / 3600);
+            let mins = Math.floor((totalSecs % 3600) / 60);
+            let secs = totalSecs % 60;
+            daysVIP.innerText = days.toLocaleString();
+            hoursVIP.innerText = hours < 10 ? '0'+hours : hours;
+            minutesVIP.innerText = mins < 10 ? '0'+mins : mins;
+            secondsVIP.innerText = secs < 10 ? '0'+secs : secs;
+            
+            // Tính % tiến trình năm hiện tại (cực kỳ sang)
+            const nowDate = new Date();
+            const startAnnivCurr = new Date(nowDate.getFullYear(), startDateVIP.getMonth(), startDateVIP.getDate());
+            let startCycle, endCycle;
+            if(nowDate < startAnnivCurr) {
+                startCycle = new Date(nowDate.getFullYear()-1, startDateVIP.getMonth(), startDateVIP.getDate());
+                endCycle = startAnnivCurr;
+            } else {
+                startCycle = startAnnivCurr;
+                endCycle = new Date(nowDate.getFullYear()+1, startDateVIP.getMonth(), startDateVIP.getDate());
+            }
+            let elapsedCycle = nowDate - startCycle;
+            let totalCycle = endCycle - startCycle;
+            let percent = 0;
+            if(totalCycle > 0 && elapsedCycle >= 0) {
+                percent = (elapsedCycle / totalCycle) * 100;
+                if(percent > 99.99) percent = 99.99;
+            }
+            let percentFixed = Math.floor(percent * 10) / 10;
+            progressPercentVIP.innerText = `${percentFixed}%`;
+            progressFillVIP.style.width = `${percent}%`;
+        }
+        
+        // cập nhật mốc kỷ niệm cao cấp (thêm các mốc vàng)
+        function updateMilestonesVIP() {
+            if(!startDateVIP || isNaN(startDateVIP.getTime())) {
+                milestoneVIPList.innerHTML = '<div class="milestone-diamond"><i class="fas fa-hourglass-half"></i> Chờ đợi ngày vàng...</div>';
+                return;
+            }
+            const now = new Date();
+            const start = new Date(startDateVIP);
+            start.setHours(0,0,0,0);
+            
+            const milestones = [];
+            // mốc 100 ngày
+            let m100 = new Date(start); m100.setDate(start.getDate()+100); milestones.push({date:m100, label:"💎 100 ngày ngọt ngào", icon:"fa-calendar-heart"});
+            let m200 = new Date(start); m200.setDate(start.getDate()+200); milestones.push({date:m200, label:"🌹 200 ngày mê say", icon:"fa-heart"});
+            let m365 = new Date(start); m365.setFullYear(start.getFullYear()+1); milestones.push({date:m365, label:"🎂 1 năm - Kỷ niệm ánh sáng", icon:"fa-cake-candles"});
+            let m500 = new Date(start); m500.setDate(start.getDate()+500); milestones.push({date:m500, label:"🥂 500 ngày tình khúc", icon:"fa-champagne-glasses"});
+            let m730 = new Date(start); m730.setFullYear(start.getFullYear()+2); milestones.push({date:m730, label:"💒 2 năm - Giai điệu trái tim", icon:"fa-ring"});
+            let m1000 = new Date(start); m1000.setDate(start.getDate()+1000); milestones.push({date:m1000, label:"✨ 1000 ngày - Vĩnh cửu", icon:"fa-star-of-life"});
+            let m1095 = new Date(start); m1095.setFullYear(start.getFullYear()+3); milestones.push({date:m1095, label:"💖 3 năm - Huyền thoại", icon:"fa-crown"});
+            
+            const future = milestones.filter(m => m.date >= now).sort((a,b)=>a.date-b.date);
+            const topMilestones = future.slice(0, 5);
+            if(topMilestones.length === 0) {
+                milestoneVIPList.innerHTML = '<div class="milestone-diamond"><i class="fas fa-infinity"></i> Hạnh phúc bất tận ❤️</div>';
+                return;
+            }
+            let html = '';
+            for(let m of topMilestones) {
+                let diffDays = Math.ceil((m.date - now) / (1000*3600*24));
+                let suffix = diffDays === 0 ? " 🎉 HÔM NAY !" : ` ‧ còn ${diffDays} ngày`;
+                if(diffDays < 0) suffix = " ‧ đã điểm qua";
+                html += `<div class="milestone-diamond"><i class="fas ${m.icon}"></i> ${m.label}${suffix}</div>`;
+            }
+            milestoneVIPList.innerHTML = html;
+        }
+        
+        // set new date
+        function setVIPDate(newDateObj) {
+            if(isNaN(newDateObj.getTime())) return false;
+            const clean = new Date(newDateObj.getFullYear(), newDateObj.getMonth(), newDateObj.getDate());
+            startDateVIP = clean;
+            saveToLocal(startDateVIP);
+            startDateInputVIP.value = formatYMD(startDateVIP);
+            updateVIPClock();
+            updateMilestonesVIP();
+            // thêm hiệu ứng báo cập nhật
+            const btn = document.getElementById('vipUpdateBtn');
+            if(btn) {
+                btn.style.transform = 'scale(0.96)';
+                setTimeout(() => { if(btn) btn.style.transform = ''; }, 200);
+            }
+            createFloatingHeart(); createFloatingHeart();
+            return true;
+        }
+        
+        function handleUpdateVIP() {
+            let val = startDateInputVIP.value;
+            if(!val) val = DEFAULT_VIP_START;
+            const newDate = new Date(val);
+            if(isNaN(newDate.getTime())) {
+                alert("✨ Hãy chọn ngày hợp lệ (năm-tháng-ngày) ✨");
+                return;
+            }
+            if(newDate > new Date()) {
+                if(confirm("💫 Ngày bắt đầu trong tương lai? Bộ đếm sẽ chờ đến ngày đó. Tiếp tục?")) {
+                    setVIPDate(newDate);
+                } else {
+                    startDateInputVIP.value = formatYMD(startDateVIP);
+                }
+                return;
+            }
+            setVIPDate(newDate);
+        }
+        
+        function resetDefaultVIP() {
+            const def = new Date(DEFAULT_VIP_START);
+            setVIPDate(def);
+        }
+        
+        function initVIP() {
+            loadSavedVIP();
+            updateVIPClock();
+            updateMilestonesVIP();
+            setInterval(() => {
+                updateVIPClock();
+            }, 1000);
+            setInterval(() => {
+                updateMilestonesVIP();
+            }, 35000);
+            startRomanticHearts();
+            updateBtnVIP.addEventListener('click', handleUpdateVIP);
+            resetBtnVIP.addEventListener('click', resetDefaultVIP);
+            startDateInputVIP.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleUpdateVIP(); });
+            // thêm animation khi load
+            setTimeout(() => { for(let i=0;i<3;i++) setTimeout(()=>createFloatingHeart(), i*300); }, 500);
+        }
+        
+        initVIP();
+    })();
+</script>
+</body>
+</html>
