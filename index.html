@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFC107">
+<title>Love Counter 💛 | Đếm ngày yêu nhau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & TOKENS
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --y50:#FFFDF7; --y100:#FFF8E3; --y200:#FFEFC4; --y300:#FFE194;
+  --y400:#FFD24D; --y500:#FFC107; --y600:#F0A500; --y700:#C97F00;
+  --ink:#3A2E17; --ink2:#7C6B4A; --line:#F2E6C9;
+  --white:#fff; --danger:#E5484D;
+  --radius:22px;
+  --shadow-sm:0 2px 10px rgba(180,140,40,.10);
+  --shadow:0 10px 30px rgba(190,150,50,.15);
+  --shadow-lg:0 22px 60px rgba(190,150,50,.25);
+  --nav-h:74px;
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Quicksand',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 560px at 8% -12%, #FFF3C4 0%, transparent 62%),
+    radial-gradient(900px 520px at 102% -4%, #FFE9A8 0%, transparent 58%),
+    linear-gradient(180deg,#FFFDF7 0%, #FFFAEC 45%, #FFFDF7 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button,input,textarea,select{font:inherit;color:inherit}
+img{display:block;max-width:100%}
+
+/* ============================================================
+   AMBIENT HEARTS
+   ============================================================ */
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.heart{position:absolute;bottom:-50px;opacity:0;will-change:transform,opacity;animation:floatUp linear forwards}
+@keyframes floatUp{
+  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
+  12%{opacity:.75}
+  85%{opacity:.35}
+  100%{transform:translate3d(var(--drift,20px),-108vh,0) rotate(320deg);opacity:0}
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 16px calc(var(--nav-h) + 28px)}
+
+/* Topbar */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 0 12px;
+  background:linear-gradient(180deg,rgba(255,253,247,.96) 60%,rgba(255,253,247,0));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:-.3px;white-space:nowrap}
+.brand-icon{font-size:22px;filter:drop-shadow(0 3px 6px rgba(255,193,7,.55));animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.brand em{font-style:normal;color:var(--y600)}
+.topbar-badge{
+  font-size:13px;font-weight:700;color:var(--y700);
+  background:var(--y100);border:1px solid var(--y200);
+  padding:7px 14px;border-radius:99px;white-space:nowrap;
+}
+
+/* Desktop nav */
+.nav-desktop{display:none;gap:5px;background:rgba(255,255,255,.75);border:1px solid var(--line);padding:6px;border-radius:18px;box-shadow:var(--shadow-sm)}
+.nav-desktop button{
+  display:flex;align-items:center;gap:8px;padding:9px 15px;border:0;background:none;
+  font-weight:600;font-size:14px;color:var(--ink2);border-radius:13px;cursor:pointer;
+  transition:all .22s ease;white-space:nowrap;
+}
+.nav-desktop button svg{width:18px;height:18px}
+.nav-desktop button:hover{background:var(--y100);color:var(--y700)}
+.nav-desktop button.active{
+  background:linear-gradient(135deg,#FFD24D,#FFC107);color:#5A4100;
+  box-shadow:0 6px 18px rgba(255,193,7,.42);
+}
+
+/* Mobile nav */
+.nav-mobile{
+  position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:70;display:flex;gap:4px;
+  background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border:1px solid rgba(255,214,120,.8);border-radius:24px;
+  padding:8px;box-shadow:0 14px 40px rgba(190,150,50,.25);
+}
+.nav-mobile button{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  border:0;background:none;font-size:10.5px;font-weight:700;color:var(--ink2);
+  padding:7px 0;border-radius:16px;cursor:pointer;transition:all .2s ease;
+}
+.nav-mobile button svg{width:22px;height:22px}
+.nav-mobile button.active{color:var(--y700);background:linear-gradient(135deg,#FFF3CC,#FFEFC4)}
+.nav-mobile button.active svg{transform:scale(1.06)}
+
+@media(min-width:900px){
+  .nav-desktop{display:flex}
+  .nav-mobile{display:none}
+  .app{padding-bottom:56px}
+}
+
+/* Views */
+.view{display:none}
+.view.active{display:block;animation:fadeUp .38s cubic-bezier(.22,1,.36,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.view-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:14px;
+  flex-wrap:wrap;margin:10px 0 18px;
+}
+.view-head h2{font-size:clamp(22px,4vw,30px);letter-spacing:-.6px}
+.view-head .sub{color:var(--ink2);font-size:13.5px;font-weight:500;margin-top:3px}
+
+/* ============================================================
+   CARDS / COMMON
+   ============================================================ */
+.card{
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(255,224,150,.75);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.card + .card{margin-top:16px}
+.card h3{font-size:15.5px;font-weight:700;letter-spacing:-.2px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 18px;border-radius:14px;border:1px solid var(--line);
+  background:#fff;font-weight:700;font-size:14px;cursor:pointer;
+  transition:all .2s ease;box-shadow:var(--shadow-sm);white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn-primary{
+  background:linear-gradient(135deg,#FFD24D,#FFC107);border-color:transparent;color:#5A4100;
+  box-shadow:0 8px 22px rgba(255,193,7,.42);
+}
+.btn-primary:hover{box-shadow:0 12px 28px rgba(255,193,7,.55)}
+.btn-ghost{background:var(--y100);border-color:var(--y200);color:var(--y700);box-shadow:none}
+.btn-danger{background:#fff;border-color:#FBD5D6;color:var(--danger);box-shadow:none}
+.btn-danger:hover{background:#FFF5F5}
+.btn-sm{padding:7px 13px;font-size:12.5px;border-radius:11px}
+.link{background:none;border:0;color:var(--y700);font-weight:700;font-size:13px;cursor:pointer;padding:4px 6px;border-radius:9px}
+.link:hover{background:var(--y100)}
+
+.muted{color:var(--ink2);font-size:13.5px}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  position:relative;overflow:hidden;border-radius:30px;padding:26px 22px;
+  background:linear-gradient(135deg,#FFE382 0%,#FFC93C 45%,#FFB300 100%);
+  box-shadow:0 24px 60px rgba(230,175,20,.38);
+  margin-top:6px;
+}
+.hero::before{
+  content:'';position:absolute;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.55),transparent 68%);
+  top:-190px;right:-130px;pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.32),transparent 70%);
+  bottom:-160px;left:-90px;pointer-events:none;
+}
+.hero-grid{position:relative;z-index:2;display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:900px){.hero-grid{grid-template-columns:1.15fr .85fr;align-items:center;gap:26px}}
+
+.hero-eyebrow{font-size:13.5px;font-weight:700;color:#6B4E00;letter-spacing:.2px;opacity:.85}
+.hero-days{display:flex;align-items:baseline;gap:10px;margin:6px 0 2px}
+.hero-days #daysBig{
+  font-size:clamp(52px,13vw,92px);font-weight:700;line-height:.95;letter-spacing:-3px;
+  color:#4A3608;text-shadow:0 3px 0 rgba(255,255,255,.42),0 14px 30px rgba(160,110,0,.22);
+}
+.hero-days .unit{font-size:clamp(17px,3.4vw,24px);font-weight:700;color:#6B4E00}
+.hero-names{font-size:15px;font-weight:700;color:#6B4E00;opacity:.9;margin-bottom:16px}
+
+.counter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:420px}
+.cbox{
+  background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);
+  border-radius:15px;padding:9px 4px;text-align:center;
+  box-shadow:0 5px 14px rgba(160,110,0,.13);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.cbox b{display:block;font-size:clamp(16px,4vw,21px);font-weight:700;color:#4A3608;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.cbox span{display:block;font-size:10px;font-weight:700;color:#8A6600;text-transform:uppercase;letter-spacing:.6px;margin-top:1px}
+
+.hero-side{display:grid;gap:12px}
+.clock-card{
+  background:rgba(255,255,255,.94);border-radius:20px;padding:16px 18px;
+  box-shadow:0 12px 30px rgba(160,110,0,.2);text-align:center;
+}
+.clock-label{font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--y700);opacity:.8}
+.clock-time{
+  font-size:clamp(30px,7vw,40px);font-weight:700;letter-spacing:1.5px;
+  color:#4A3608;font-variant-numeric:tabular-nums;line-height:1.15;margin:2px 0;
+}
+.clock-date{font-size:12.5px;font-weight:600;color:var(--ink2)}
+
+.anniv-card{
+  background:rgba(90,65,0,.14);border:1px solid rgba(255,255,255,.5);
+  border-radius:18px;padding:13px 16px;color:#4A3608;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.anniv-title{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;opacity:.8}
+.anniv-name{font-size:16px;font-weight:700;margin:2px 0 3px}
+.anniv-count{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;opacity:.92}
+
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.stat{
+  background:rgba(255,255,255,.9);border:1px solid rgba(255,224,150,.8);
+  border-radius:18px;padding:13px 6px;text-align:center;box-shadow:var(--shadow-sm);
+}
+.stat b{display:block;font-size:clamp(15px,3.6vw,20px);font-weight:700;color:var(--y700);letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:10.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+.grid-2{display:grid;gap:16px;margin-top:16px}
+@media(min-width:820px){.grid-2{grid-template-columns:1fr 1fr}}
+
+/* Next milestone card */
+.nm{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#FFF8E3,#FFF1CC);border:1px solid var(--y200)}
+.nm-ico{width:50px;height:50px;flex:none;display:grid;place-items:center;font-size:24px;border-radius:16px;background:#fff;box-shadow:var(--shadow-sm)}
+.nm-body{min-width:0}
+.nm-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm-sub{font-size:12.5px;color:var(--ink2);font-weight:600;margin-top:2px}
+.nm-count{margin-left:auto;text-align:right;flex:none}
+.nm-count b{display:block;font-size:20px;font-weight:700;color:var(--y700);line-height:1;font-variant-numeric:tabular-nums}
+.nm-count span{font-size:10.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px}
+
+/* Quote */
+.quote-card{display:flex;flex-direction:column}
+.quote{font-size:15.5px;line-height:1.6;font-weight:600;color:var(--ink);flex:1;margin-bottom:14px;font-style:italic}
+.quote::before{content:'“';color:var(--y400);font-size:28px;line-height:0;vertical-align:-6px;margin-right:2px}
+
+/* Mini gallery */
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:520px){.mini-grid{grid-template-columns:repeat(6,1fr)}}
+.mini-photo{aspect-ratio:1;border-radius:13px;overflow:hidden;cursor:pointer;background:var(--y100);box-shadow:var(--shadow-sm);transition:transform .22s ease}
+.mini-photo:hover{transform:scale(1.05) rotate(-1.5deg)}
+.mini-photo img{width:100%;height:100%;object-fit:cover}
+
+/* ============================================================
+   MILESTONES
+   ============================================================ */
+.ms-item{
+  display:flex;align-items:center;gap:14px;padding:14px;
+  border-radius:18px;background:#fff;border:1px solid var(--line);
+  transition:all .2s ease;
+}
+.ms-item + .ms-item{margin-top:10px}
+.ms-item:hover{border-color:var(--y300);box-shadow:var(--shadow-sm);transform:translateX(2px)}
+.ms-ico{
+  width:48px;height:48px;flex:none;display:grid;place-items:center;font-size:23px;
+  border-radius:15px;background:linear-gradient(135deg,#FFF6D9,#FFEFC4);border:1px solid var(--y200);
+}
+.ms-body{min-width:0;flex:1}
+.ms-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-note{font-size:12.5px;color:var(--ink2);font-weight:500;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-date{font-size:11.5px;font-weight:700;color:var(--y700);margin-top:3px;letter-spacing:.2px}
+.ms-right{display:flex;align-items:center;gap:8px;flex:none}
+.ms-tag{
+  font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;white-space:nowrap;
+  background:var(--y100);color:var(--y700);border:1px solid var(--y200);
+}
+.ms-tag.past{background:#F6F6F6;color:#8C8C8C;border-color:#EAEAEA}
+.ms-tag.today{background:linear-gradient(135deg,#FFD24D,#FFC107);color:#5A4100;border-color:transparent}
+.ms-actions{display:flex;gap:3px}
+.icon-btn{
+  width:34px;height:34px;display:grid;place-items:center;border-radius:11px;
+  border:1px solid transparent;background:none;cursor:pointer;font-size:14px;
+  color:var(--ink2);transition:all .18s ease;
+}
+.icon-btn:hover{background:var(--y100);color:var(--y700)}
+.icon-btn.danger:hover{background:#FFF0F0;color:var(--danger)}
+
+/* ============================================================
+   GALLERY
+   ============================================================ */
+.photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:600px){.photo-grid{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:960px){.photo-grid{grid-template-columns:repeat(4,1fr)}}
+.photo{
+  position:relative;aspect-ratio:1;border-radius:18px;overflow:hidden;cursor:pointer;
+  background:var(--y100);box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease;
+}
+.photo:hover{transform:translateY(-3px) scale(1.015);box-shadow:var(--shadow)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo-del{
+  position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;
+  border:0;background:rgba(0,0,0,.45);color:#fff;font-size:13px;line-height:1;cursor:pointer;
+  display:grid;place-items:center;opacity:0;transition:opacity .2s ease;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.photo:hover .photo-del{opacity:1}
+@media(hover:none){.photo-del{opacity:.9}}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+.empty{text-align:center;padding:34px 16px;color:var(--ink2)}
+.empty-ico{font-size:44px;margin-bottom:10px;opacity:.85}
+.empty p{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:16px}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+.field{display:block;margin-bottom:15px}
+.field span{display:block;font-size:12.5px;font-weight:700;color:var(--ink2);margin-bottom:6px;letter-spacing:.2px}
+.field input,.field textarea,.field select{
+  width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);
+  background:#FFFDF8;font-weight:600;font-size:14.5px;outline:none;transition:all .2s ease;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--y400);background:#fff;box-shadow:0 0 0 4px rgba(255,193,7,.16);
+}
+.field textarea{resize:vertical;min-height:64px}
+
+.switch-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:13px 0;border-bottom:1px dashed var(--line);cursor:pointer;font-weight:600;font-size:14px;
+}
+.switch-row:last-of-type{border-bottom:0}
+.switch-row input{position:absolute;opacity:0;pointer-events:none}
+.sw{width:48px;height:28px;border-radius:99px;background:#EDE3CB;position:relative;transition:background .25s ease;flex:none}
+.sw::after{
+  content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:left .25s cubic-bezier(.34,1.56,.64,1);
+}
+.switch-row input:checked + .sw{background:linear-gradient(135deg,#FFD24D,#FFC107)}
+.switch-row input:checked + .sw::after{left:23px}
+
+.data-actions{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.data-actions .btn{width:100%}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal{
+  position:fixed;inset:0;z-index:200;display:none;place-items:center;padding:16px;
+  background:rgba(58,46,23,.4);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+}
+.modal.open{display:grid;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-card{
+  width:min(460px,100%);max-height:88vh;overflow-y:auto;background:#fff;
+  border-radius:26px;padding:24px;box-shadow:var(--shadow-lg);
+  animation:pop .28s cubic-bezier(.34,1.4,.64,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(14px)}to{opacity:1;transform:none}}
+.modal-card h3{font-size:18px;margin-bottom:18px}
+.modal-actions{display:flex;gap:10px;margin-top:6px}
+.modal-actions .btn{flex:1}
+
+.emoji-row{display:flex;flex-wrap:wrap;gap:7px}
+.emoji-row button{
+  width:42px;height:42px;border-radius:13px;border:1.5px solid var(--line);
+  background:#FFFDF8;font-size:19px;cursor:pointer;transition:all .18s ease;
+  display:grid;place-items:center;
+}
+.emoji-row button:hover{transform:scale(1.08);background:var(--y100)}
+.emoji-row button.sel{border-color:var(--y500);background:var(--y100);box-shadow:0 0 0 3px rgba(255,193,7,.2)}
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+.lightbox{
+  position:fixed;inset:0;z-index:300;display:none;
+  background:rgba(30,22,8,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:56px 14px 76px;
+}
+.lightbox.open{display:flex;animation:fadeIn .2s ease}
+.lightbox img{
+  max-width:100%;max-height:100%;border-radius:16px;object-fit:contain;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .3s ease;
+}
+.lb-close{
+  position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;
+  border:0;background:rgba(255,255,255,.16);color:#fff;font-size:17px;cursor:pointer;
+  display:grid;place-items:center;transition:background .2s ease;
+}
+.lb-close:hover{background:rgba(255,255,255,.3)}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.16);color:#fff;font-size:26px;line-height:1;cursor:pointer;
+  display:grid;place-items:center;transition:background .2s ease;
+}
+.lb-nav:hover{background:rgba(255,255,255,.3)}
+.lb-prev{left:12px}
+.lb-next{right:12px}
+.lb-bar{
+  position:absolute;bottom:16px;left:16px;right:16px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:rgba(255,255,255,.13);border-radius:16px;padding:10px 14px;color:#fff;
+  font-weight:600;font-size:13.5px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.lb-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast{
+  position:fixed;left:50%;bottom:calc(var(--nav-h) + 24px);transform:translate(-50%,20px);
+  z-index:400;background:#3A2E17;color:#fff;font-weight:700;font-size:13.5px;
+  padding:12px 20px;border-radius:99px;box-shadow:0 14px 40px rgba(0,0,0,.28);
+  opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.4,.64,1);max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:900px){.toast{bottom:28px}}
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="app">
+
+  <!-- ================= TOPBAR ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">💛</span>
+      <span>Love<em>Counter</em></span>
+    </div>
+
+    <nav class="nav-desktop">
+      <button data-view="home" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        Trang chủ
+      </button>
+      <button data-view="milestones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.5 6 .9-4.35 4.2 1.03 5.98L12 16.75 6.62 19.58l1.03-5.98L3.3 9.4l6-.9z"/></svg>
+        Mốc kỷ niệm
+      </button>
+      <button data-view="gallery">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 16-5-5L5 20"/></svg>
+        Album
+      </button>
+      <button data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.36.44.65.8.8H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Cài đặt
+      </button>
+    </nav>
+
+    <div class="topbar-badge" id="topbarBadge">💛 0 ngày</div>
+  </header>
+
+  <main>
+
+    <!-- ================= HOME ================= -->
+    <section class="view active" id="view-home">
+
+      <div class="hero">
+        <div class="hero-grid">
+          <div>
+            <p class="hero-eyebrow">💛 Chúng ta đã bên nhau</p>
+            <div class="hero-days">
+              <span id="daysBig">0</span>
+              <span class="unit">ngày</span>
+            </div>
+            <p class="hero-names" id="heroNames">Anh &amp; Em</p>
+
+            <div class="counter-grid">
+              <div class="cbox"><b id="cDays">0</b><span>Ngày</span></div>
+              <div class="cbox"><b id="cHours">00</b><span>Giờ</span></div>
+              <div class="cbox"><b id="cMins">00</b><span>Phút</span></div>
+              <div class="cbox"><b id="cSecs">00</b><span>Giây</span></div>
+            </div>
+          </div>
+
+          <div class="hero-side">
+            <div class="clock-card">
+              <div class="clock-label">Bây giờ</div>
+              <div class="clock-time" id="clockTime">00:00:00</div>
+              <div class="clock-date" id="clockDate">—</div>
+            </div>
+            <div class="anniv-card">
+              <div class="anniv-title">🎉 Kỷ niệm tiếp theo</div>
+              <div class="anniv-name" id="annivName">—</div>
+              <div class="anniv-count" id="annivCount">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><b id="stWeeks">0</b><span>Tuần</span></div>
+        <div class="stat"><b id="stMonths">0</b><span>Tháng</span></div>
+        <div class="stat"><b id="stHours">0</b><span>Giờ</span></div>
+        <div class="stat"><b id="stMins">0</b><span>Phút</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>⏳ Mốc sắp tới</h3>
+            <button class="link" data-goto="milestones">Xem tất cả →</button>
+          </div>
+          <div id="nextMilestone"></div>
+        </div>
+
+        <div class="card quote-card">
+          <div class="card-head"><h3>💌 Lời nhắn yêu thương</h3></div>
+          <p class="quote" id="quoteText">…</p>
+          <button class="btn btn-ghost" id="newQuoteBtn">Đổi lời nhắn ✨</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>📸 Kỷ niệm gần đây</h3>
+          <button class="link" data-goto="gallery">Mở album →</button>
+        </div>
+        <div class="mini-grid" id="miniGallery"></div>
+      </div>
+
+    </section>
+
+    <!-- ================= MILESTONES ================= -->
+    <section class="view" id="view-milestones">
+      <div class="view-head">
+        <div>
+          <h2>Mốc kỷ niệm</h2>
+          <p class="sub">Những dấu mốc quan trọng của chúng ta 💛</p>
+        </div>
+        <button class="btn btn-primary" data-action="add-ms">＋ Thêm mốc</button>
+      </div>
+      <div class="card" id="msList"></div>
+    </section>
+
+    <!-- ================= GALLERY ================= -->
+    <section class="view" id="view-gallery">
+      <div class="view-head">
+        <div>
+          <h2>Album kỷ niệm</h2>
+          <p class="sub" id="gallerySub">0 ảnh</p>
+        </div>
+        <label class="btn btn-primary" for="photoInput">＋ Tải ảnh lên</label>
+        <input type="file" id="photoInput" accept="image/*" multiple hidden>
+      </div>
+      <div class="card">
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+    <section class="view" id="view-settings">
+      <div class="view-head">
+        <div>
+          <h2>Cài đặt</h2>
+          <p class="sub">Tuỳ chỉnh trang của riêng hai bạn</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>👫 Thông tin của hai bạn</h3></div>
+          <label class="field">
+            <span>Tên của bạn</span>
+            <input type="text" id="inYou" placeholder="VD: Anh" maxlength="24">
+          </label>
+          <label class="field">
+            <span>Tên người ấy</span>
+            <input type="text" id="inPartner" placeholder="VD: Em" maxlength="24">
+          </label>
+          <label class="field">
+            <span>Ngày bắt đầu yêu</span>
+            <input type="datetime-local" id="inStart">
+          </label>
+          <button class="btn btn-primary" id="saveInfo">Lưu thay đổi 💛</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>🎨 Hiển thị</h3></div>
+
+          <label class="switch-row">
+            <span>Hiện giây trên đồng hồ</span>
+            <input type="checkbox" id="optSeconds">
+            <i class="sw"></i>
+          </label>
+
+          <label class="switch-row">
+            <span>Hiệu ứng trái tim bay</span>
+            <input type="checkbox" id="optHearts">
+            <i class="sw"></i>
+          </label>
+
+          <div style="margin-top:16px">
+            <div class="field" style="margin-bottom:0">
+              <span>Mẹo nhỏ</span>
+              <p class="muted" style="line-height:1.6">
+                Dữ liệu được lưu ngay trên thiết bị của bạn (localStorage).
+                Hãy dùng chức năng <b>Xuất dữ liệu</b> để sao lưu, và
+                <b>Nhập dữ liệu</b> để khôi phục hoặc chuyển sang thiết bị khác.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>💾 Dữ liệu</h3></div>
+          <div class="data-actions">
+            <button class="btn" id="exportBtn">📤 Xuất dữ liệu (JSON)</button>
+            <label class="btn" for="importInput">📥 Nhập dữ liệu (JSON)</label>
+            <input type="file" id="importInput" accept="application/json" hidden>
+            <button class="btn btn-danger" id="resetBtn">🗑️ Xoá toàn bộ dữ liệu</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ================= MOBILE NAV ================= -->
+<nav class="nav-mobile">
+  <button data-view="home" class="active">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    Trang chủ
+  </button>
+  <button data-view="milestones">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.5 6 .9-4.35 4.2 1.03 5.98L12 16.75 6.62 19.58l1.03-5.98L3.3 9.4l6-.9z"/></svg>
+    Mốc
+  </button>
+  <button data-view="gallery">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 16-5-5L5 20"/></svg>
+    Album
+  </button>
+  <button data-view="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.36.44.65.8.8H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Cài đặt
+  </button>
+</nav>
+
+<!-- ================= MILESTONE MODAL ================= -->
+<div class="modal" id="msModal">
+  <div class="modal-card">
+    <h3 id="msModalTitle">Thêm mốc kỷ niệm</h3>
+
+    <label class="field">
+      <span>Tiêu đề</span>
+      <input type="text" id="msTitle" placeholder="VD: Lần đầu gặp nhau" maxlength="60">
+    </label>
+
+    <label class="field">
+      <span>Ngày</span>
+      <input type="date" id="msDate">
+    </label>
+
+    <div class="field">
+      <span>Biểu tượng</span>
+      <div class="emoji-row" id="emojiRow"></div>
+    </div>
+
+    <label class="field">
+      <span>Ghi chú (không bắt buộc)</span>
+      <textarea id="msNote" rows="2" maxlength="120" placeholder="Một chút kỷ niệm..."></textarea>
+    </label>
+
+    <div class="modal-actions">
+      <button class="btn" data-close>Huỷ</button>
+      <button class="btn btn-primary" id="msSave">Lưu 💛</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LIGHTBOX ================= -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <img id="lbImg" alt="Ảnh kỷ niệm">
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+  <div class="lb-bar">
+    <span id="lbCaption"></span>
+    <button class="btn btn-danger btn-sm" id="lbDelete">Xoá ảnh</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const pad2 = n => String(n).padStart(2, '0');
+  const WD = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const MS_DAY = 86400000;
+
+  const esc = s => String(s ?? '').replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  function localISO(d) {
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  }
+  function startOfToday() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+  function fmtDateVN(str) {
+    const d = new Date(str);
+    if (isNaN(d)) return '—';
+    return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  const KEY = 'lovecounter.v1';
+
+  function DEFAULT_STATE() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return {
+      you: 'Anh',
+      partner: 'Em',
+      startDate: localISO(d),
+      milestones: [],
+      photos: [],
+      settings: { seconds: true, hearts: true }
+    };
+  }
+
+  let state;
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return DEFAULT_STATE();
+      const s = JSON.parse(raw);
+      const d = DEFAULT_STATE();
+      return {
+        ...d, ...s,
+        settings: { ...d.settings, ...(s.settings || {}) },
+        milestones: Array.isArray(s.milestones) ? s.milestones : [],
+        photos: Array.isArray(s.photos) ? s.photos : []
+      };
+    } catch (e) {
+      return DEFAULT_STATE();
+    }
+  }
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  state = load();
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer;
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* =========================================================
+     NAVIGATION
+     ========================================================= */
+  function go(view) {
+    $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+    $$('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('click', e => {
+    const navBtn = e.target.closest('[data-view]');
+    if (navBtn) { go(navBtn.dataset.view); return; }
+
+    const gotoBtn = e.target.closest('[data-goto]');
+    if (gotoBtn) { go(gotoBtn.dataset.goto); return; }
+  });
+
+  /* =========================================================
+     TIME CALCULATIONS
+     ========================================================= */
+  function monthsBetween(a, b) {
+    let m = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+    if (b.getDate() < a.getDate()) m--;
+    return Math.max(0, m);
+  }
+
+  function nextAnniversary(start, now) {
+    const m = start.getMonth(), d = start.getDate();
+    const today = startOfToday();
+    let y = now.getFullYear();
+    let target = new Date(y, m, d, 0, 0, 0, 0);
+    if (target < today) target = new Date(y + 1, m, d, 0, 0, 0, 0);
+    return target;
+  }
+
+  function daysTogether() {
+    const diff = Date.now() - new Date(state.startDate).getTime();
+    return Math.max(0, Math.floor(diff / MS_DAY));
+  }
+
+  /* =========================================================
+     MAIN TICK (every second)
+     ========================================================= */
+  function tick() {
+    const now = new Date();
+    const p = pad2;
+
+    /* --- Real-time clock --- */
+    $('#clockTime').textContent = state.settings.seconds
+      ? `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`
+      : `${p(now.getHours())}:${p(now.getMinutes())}`;
+    $('#clockDate').textContent =
+      `${WD[now.getDay()]}, ${now.getDate()} tháng ${now.getMonth() + 1}, ${now.getFullYear()}`;
+
+    /* --- Love duration --- */
+    const start = new Date(state.startDate);
+    let diff = now.getTime() - start.getTime();
+    if (diff < 0) diff = 0;
+
+    const totalSec = Math.floor(diff / 1000);
+    const days  = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const mins  = Math.floor((totalSec % 3600) / 60);
+    const secs  = totalSec % 60;
+
+    $('#daysBig').textContent = days.toLocaleString('vi-VN');
+    $('#cDays').textContent   = days.toLocaleString('vi-VN');
+    $('#cHours').textContent  = p(hours);
+    $('#cMins').textContent   = p(mins);
+    $('#cSecs').textContent   = p(secs);
+
+    /* --- Stats --- */
+    $('#stWeeks').textContent  = Math.floor(days / 7).toLocaleString('vi-VN');
+    $('#stMonths').textContent = monthsBetween(start, now).toLocaleString('vi-VN');
+    $('#stHours').textContent  = Math.floor(totalSec / 3600).toLocaleString('vi-VN');
+    $('#stMins').textContent   = Math.floor(totalSec / 60).toLocaleString('vi-VN');
+
+    /* --- Next anniversary --- */
+    const ann = nextAnniversary(start, now);
+    const yearsCount = Math.max(0, ann.getFullYear() - start.getFullYear());
+    const isToday = ann.getFullYear() === now.getFullYear()
+                 && ann.getMonth() === now.getMonth()
+                 && ann.getDate() === now.getDate();
+
+    $('#annivName').textContent = yearsCount > 0
+      ? `Kỷ niệm ${yearsCount} năm`
+      : 'Ngày đặc biệt';
+
+    if (isToday) {
+      $('#annivCount').textContent = '🎉 Hôm nay chính là ngày kỷ niệm!';
+    } else {
+      let ms = ann.getTime() - now.getTime();
+      if (ms < 0) ms = 0;
+      const d = Math.floor(ms / MS_DAY);
+      const h = Math.floor((ms % MS_DAY) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      $('#annivCount').textContent =
+        `${d} ngày ${p(h)}:${p(m)}:${p(s)}  •  ${fmtDateVN(ann)}`;
+    }
+
+    /* --- Topbar badge --- */
+    $('#topbarBadge').textContent = '💛 ' + days.toLocaleString('vi-VN') + ' ngày';
+  }
+
+  /* =========================================================
+     NEXT MILESTONE (home)
+     ========================================================= */
+  function renderNextMilestone() {
+    const box = $('#nextMilestone');
+    const today = startOfToday();
+
+    const upcoming = state.milestones
+      .map(m => ({ ...m, _d: new Date(m.date) }))
+      .filter(m => !isNaN(m._d) && m._d >= today)
+      .sort((a, b) => a._d - b._d);
+
+    if (!upcoming.length) {
+      box.innerHTML = `<div class="empty" style="padding:22px 8px">
+        <div class="empty-ico">🗓️</div>
+        <p>Chưa có mốc nào sắp tới.<br>Thêm một mốc kỷ niệm nhé!</p>
+        <button class="btn btn-primary btn-sm" data-action="add-ms">＋ Thêm mốc</button>
+      </div>`;
+      return;
+    }
+
+    const m = upcoming[0];
+    const diffDays = Math.round((m._d.setHours(0, 0, 0, 0) - today.getTime()) / MS_DAY);
+    const rel = diffDays === 0 ? 'Hôm nay' : `Còn ${diffDays} ngày`;
+
+    box.innerHTML = `
+      <div class="nm">
+        <div class="nm-ico">${esc(m.emoji || '💛')}</div>
+        <div class="nm-body">
+          <div class="nm-title">${esc(m.title)}</div>
+          <div class="nm-sub">${fmtDateVN(m.date)}${m.note ? ' • ' + esc(m.note) : ''}</div>
+        </div>
+        <div class="nm-count">
+          <b>${diffDays === 0 ? '🎉' : diffDays}</b>
+          <span>${diffDays === 0 ? 'Hôm nay' : 'ngày nữa'}</span>
+        </div>
+      </div>`;
+  }
+
+  /* =========================================================
+     MILESTONES VIEW
+     ========================================================= */
+  const EMOJIS = ['💛','❤️','💍','🌸','🎂','✈️','🏠','🎁','🥂','🌙','⭐','📸','🎵','🍰','🐾','☀️','🎓','🏖️'];
+
+  function relDayLabel(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return { text: '—', cls: 'past' };
+    const today = startOfToday();
+    const dd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const diff = Math.round((dd - today) / MS_DAY);
+    if (diff === 0) return { text: 'Hôm nay 🎉', cls: 'today' };
+    if (diff > 0) return { text: `Còn ${diff} ngày`, cls: '' };
+    return { text: `${-diff} ngày trước`, cls: 'past' };
+  }
+
+  function renderMilestones() {
+    const box = $('#msList');
+
+    if (!state.milestones.length) {
+      box.innerHTML = `<div class="empty">
+        <div class="empty-ico">🗓️</div>
+        <p>Chưa có mốc kỷ niệm nào.<br>Hãy thêm những khoảnh khắc đáng nhớ của hai bạn!</p>
+        <button class="btn btn-primary" data-action="add-ms">＋ Thêm mốc đầu tiên</button>
+      </div>`;
+      return;
+    }
+
+    const sorted = [...state.milestones].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    box.innerHTML = sorted.map(m => {
+      const rel = relDayLabel(m.date);
+      return `
+        <div class="ms-item">
+          <div class="ms-ico">${esc(m.emoji || '💛')}</div>
+          <div class="ms-body">
+            <div class="ms-title">${esc(m.title)}</div>
+            ${m.note ? `<div class="ms-note">${esc(m.note)}</div>` : ''}
+            <div class="ms-date">📅 ${fmtDateVN(m.date)}</div>
+          </div>
+          <div class="ms-right">
+            <span class="ms-tag ${rel.cls}">${rel.text}</span>
+            <div class="ms-actions">
+              <button class="icon-btn" data-action="edit-ms" data-id="${m.id}" title="Sửa">✏️</button>
+              <button class="icon-btn danger" data-action="del-ms" data-id="${m.id}" title="Xoá">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* =========================================================
+     MILESTONE MODAL
+     ========================================================= */
+  let editingId = null;
+  let selectedEmoji = '💛';
+
+  function buildEmojiRow() {
+    const row = $('#emojiRow');
+    row.innerHTML = EMOJIS.map(e =>
+      `<button type="button" data-emoji="${e}" class="${e === selectedEmoji ? 'sel' : ''}">${e}</button>`
+    ).join('');
+  }
+
+  function openMsModal(id) {
+    editingId = id || null;
+    const m = id ? state.milestones.find(x => x.id === id) : null;
+
+    $('#msModalTitle').textContent = m ? 'Sửa mốc kỷ niệm' : 'Thêm mốc kỷ niệm';
+    $('#msTitle').value = m ? m.title : '';
+    $('#msDate').value = m ? m.date : localISO(new Date()).slice(0, 10);
+    $('#msNote').value = m ? (m.note || '') : '';
+    selectedEmoji = m ? (m.emoji || '💛') : '💛';
+
+    buildEmojiRow();
+    $('#msModal').classList.add('open');
+    setTimeout(() => $('#msTitle').focus(), 60);
+  }
+
+  function closeMsModal() {
+    $('#msModal').classList.remove('open');
+    editingId = null;
+  }
+
+  $('#emojiRow').addEventListener('click', e => {
+    const btn = e.target.closest('[data-emoji]');
+    if (!btn) return;
+    selectedEmoji = btn.dataset.emoji;
+    $$('#emojiRow button').forEach(b => b.classList.toggle('sel', b === btn));
+  });
+
+  $('#msSave').addEventListener('click', () => {
+    const title = $('#msTitle').value.trim();
+    const date = $('#msDate').value;
+    const note = $('#msNote').value.trim();
+
+    if (!title) { toast('Vui lòng nhập tiêu đề ✍️'); $('#msTitle').focus(); return; }
+    if (!date) { toast('Vui lòng chọn ngày 📅'); $('#msDate').focus(); return; }
+
+    if (editingId) {
+      const m = state.milestones.find(x => x.id === editingId);
+      if (m) { m.title = title; m.date = date; m.note = note; m.emoji = selectedEmoji; }
+    } else {
+      state.milestones.push({ id: uid(), title, date, note, emoji: selectedEmoji });
+    }
+
+    save();
+    renderMilestones();
+    renderNextMilestone();
+    closeMsModal();
+    toast(editingId ? 'Đã cập nhật mốc 💛' : 'Đã thêm mốc kỷ niệm 💛');
+  });
+
+  $('#msModal').addEventListener('click', e => {
+    if (e.target.id === 'msModal' || e.target.closest('[data-close]')) closeMsModal();
+  });
+
+  /* =========================================================
+     GALLERY
+     ========================================================= */
+  function renderGallery() {
+    const grid = $('#photoGrid');
+    const mini = $('#miniGallery');
+
+    $('#gallerySub').textContent = `${state.photos.length} ảnh`;
+
+    if (!state.photos.length) {
+      grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-ico">📷</div>
+        <p>Chưa có ảnh kỷ niệm nào.<br>Tải lên những tấm ảnh đẹp nhất của hai đứa nhé!</p>
+        <label class="btn btn-primary" for="photoInput">＋ Tải ảnh lên</label>
+      </div>`;
+      mini.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center;padding:10px 0">Chưa có ảnh nào.</p>`;
+      return;
+    }
+
+    grid.innerHTML = state.photos.map((p, i) => `
+      <div class="photo" data-action="open-photo" data-index="${i}">
+        <img src="${p.src}" alt="${esc(p.caption || 'Ảnh kỷ niệm')}" loading="lazy">
+        <button class="photo-del" data-action="del-photo" data-id="${p.id}" title="Xoá ảnh">✕</button>
+      </div>`).join('');
+
+    mini.innerHTML = state.photos.slice(0, 6).map((p, i) => `
+      <div class="mini-photo" data-action="open-photo" data-index="${i}">
+        <img src="${p.src}" alt="" loading="lazy">
+      </div>`).join('');
+  }
+
+  /* ---- Image compression ---- */
+  function compressImage(file, maxSize = 1400, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          const scale = Math.min(1, maxSize / Math.max(w, h));
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } catch (err) {
+          URL.revokeObjectURL(url);
+          reject(err);
+        }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+      img.src = url;
+    });
+  }
+
+  $('#photoInput').addEventListener('change', async e => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!files.length) return;
+
+    toast(`Đang xử lý ${files.length} ảnh... ⏳`);
+    let added = 0;
+
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const src = await compressImage(file);
+        const photo = {
+          id: uid(),
+          src,
+          caption: file.name.replace(/\.[^.]+$/, '').slice(0, 60),
+          createdAt: Date.now()
+        };
+        state.photos.unshift(photo);
+
+        if (!save()) {
+          state.photos.shift();
+          toast('⚠️ Bộ nhớ đầy! Hãy xoá bớt ảnh cũ.');
+          break;
+        }
+        added++;
+        renderGallery();
+      } catch (err) {
+        /* bỏ qua ảnh lỗi */
+      }
+    }
+
+    renderGallery();
+    if (added) toast(`Đã thêm ${added} ảnh 💛`);
+  });
+
+  /* ---- Lightbox ---- */
+  let lbIndex = 0;
+
+  function openLightbox(i) {
+    if (!state.photos.length) return;
+    lbIndex = (i + state.photos.length) % state.photos.length;
+    const p = state.photos[lbIndex];
+    $('#lbImg').src = p.src;
+    $('#lbCaption').textContent = p.caption || `Ảnh ${lbIndex + 1}/${state.photos.length}`;
+    $('#lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    $('#lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function lbStep(dir) {
+    if (!state.photos.length) return;
+    openLightbox(lbIndex + dir);
+  }
+
+  $('#lbClose').addEventListener('click', closeLightbox);
+  $('#lbPrev').addEventListener('click', () => lbStep(-1));
+  $('#lbNext').addEventListener('click', () => lbStep(1));
+  $('#lightbox').addEventListener('click', e => {
+    if (e.target.id === 'lightbox') closeLightbox();
+  });
+
+  $('#lbDelete').addEventListener('click', () => {
+    const p = state.photos[lbIndex];
+    if (!p) return;
+    if (!confirm('Xoá ảnh này khỏi album?')) return;
+
+    state.photos = state.photos.filter(x => x.id !== p.id);
+    save();
+    renderGallery();
+
+    if (!state.photos.length) closeLightbox();
+    else openLightbox(Math.min(lbIndex, state.photos.length - 1));
+
+    toast('Đã xoá ảnh 🗑️');
+  });
+
+  document.addEventListener('keydown', e => {
+    if ($('#lightbox').classList.contains('open')) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbStep(-1);
+      if (e.key === 'ArrowRight') lbStep(1);
+    }
+    if (e.key === 'Escape' && $('#msModal').classList.contains('open')) closeMsModal();
+  });
+
+  /* =========================================================
+     GLOBAL ACTION DELEGATION
+     ========================================================= */
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+
+    const { action, id, index } = btn.dataset;
+
+    if (action === 'add-ms') { openMsModal(null); return; }
+
+    if (action === 'edit-ms') { openMsModal(id); return; }
+
+    if (action === 'del-ms') {
+      if (!confirm('Xoá mốc kỷ niệm này?')) return;
+      state.milestones = state.milestones.filter(m => m.id !== id);
+      save();
+      renderMilestones();
+      renderNextMilestone();
+      toast('Đã xoá mốc 🗑️');
+      return;
+    }
+
+    if (action === 'open-photo') { openLightbox(Number(index)); return; }
+
+    if (action === 'del-photo') {
+      e.stopPropagation();
+      const p = state.photos.find(x => x.id === id);
+      if (!p) return;
+      if (!confirm('Xoá ảnh này khỏi album?')) return;
+      state.photos = state.photos.filter(x => x.id !== id);
+      save();
+      renderGallery();
+      toast('Đã xoá ảnh 🗑️');
+      return;
+    }
+  });
+
+  /* =========================================================
+     QUOTES
+     ========================================================= */
+  const QUOTES = [
+    'Yêu em không phải là một quyết định, mà là điều tự nhiên nhất anh từng làm. 💛',
+    'Cùng em, mỗi ngày bình thường đều trở thành một ngày đáng nhớ.',
+    'Anh không cần cả thế giới, anh chỉ cần một người — là em.',
+    'Nếu thời gian là thứ quý giá nhất, anh muốn dành tất cả cho em.',
+    'Em là lý do anh tin rằng những điều đẹp nhất vẫn còn ở phía trước.',
+    'Mỗi sáng thức dậy, điều anh biết ơn nhất là được yêu em thêm một ngày nữa.',
+    'Không cần hoàn hảo, chỉ cần là chúng ta. 💛',
+    'Hạnh phúc là khi có người nắm tay bạn và nói: "Có anh/em đây rồi".',
+    'Cảm ơn em vì đã đến và ở lại.',
+    'Yêu nhau từng ngày, rồi sẽ yêu nhau cả đời.'
+  ];
+  let quoteIdx = Math.floor(Math.random() * QUOTES.length);
+
+  function showQuote() {
+    $('#quoteText').textContent = QUOTES[quoteIdx % QUOTES.length];
+    quoteIdx++;
+  }
+
+  $('#newQuoteBtn').addEventListener('click', showQuote);
+
+  /* =========================================================
+     SETTINGS
+     ========================================================= */
+  function renderSettings() {
+    $('#inYou').value = state.you;
+    $('#inPartner').value = state.partner;
+    $('#inStart').value = state.startDate;
+    $('#optSeconds').checked = !!state.settings.seconds;
+    $('#optHearts').checked = !!state.settings.hearts;
+  }
+
+  $('#saveInfo').addEventListener('click', () => {
+    state.you = $('#inYou').value.trim() || 'Anh';
+    state.partner = $('#inPartner').value.trim() || 'Em';
+
+    const v = $('#inStart').value;
+    if (v) state.startDate = v;
+
+    save();
+    renderStatic();
+    tick();
+    toast('Đã lưu thay đổi 💛');
+  });
+
+  $('#optSeconds').addEventListener('change', e => {
+    state.settings.seconds = e.target.checked;
+    save();
+    tick();
+  });
+
+  $('#optHearts').addEventListener('change', e => {
+    state.settings.hearts = e.target.checked;
+    save();
+    $('#hearts').style.display = e.target.checked ? '' : 'none';
+  });
+
+  /* ---- Export / Import / Reset ---- */
+  $('#exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lovecounter-${localISO(new Date()).slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('Đã xuất dữ liệu 📤');
+  });
+
+  $('#importInput').addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data || typeof data !== 'object') throw new Error('invalid');
+
+        const d = DEFAULT_STATE();
+        state = {
+          ...d,
+          ...data,
+          settings: { ...d.settings, ...(data.settings || {}) },
+          milestones: Array.isArray(data.milestones) ? data.milestones : [],
+          photos: Array.isArray(data.photos) ? data.photos : []
+        };
+
+        if (!save()) toast('⚠️ Dữ liệu quá lớn, không lưu được hết.');
+        renderStatic();
+        tick();
+        applySettings();
+        toast('Đã nhập dữ liệu 📥');
+      } catch (err) {
+        toast('❌ File không hợp lệ');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  $('#resetBtn').addEventListener('click', () => {
+    if (!confirm('Xoá TOÀN BỘ dữ liệu (thông tin, mốc kỷ niệm, ảnh)?\nHành động này không thể hoàn tác!')) return;
+    localStorage.removeItem(KEY);
+    location.reload();
+  });
+
+  /* =========================================================
+     AMBIENT HEARTS
+     ========================================================= */
+  function spawnHeart() {
+    if (!state.settings.hearts) return;
+    const box = $('#hearts');
+    if (!box || box.children.length > 26) return;
+
+    const el = document.createElement('div');
+    el.className = 'heart';
+    const icons = ['💛', '💛', '💛', '🤍', '✨'];
+    el.textContent = icons[Math.floor(Math.random() * icons.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (12 + Math.random() * 18) + 'px';
+    el.style.animationDuration = (9 + Math.random() * 8) + 's';
+    el.style.setProperty('--drift', (Math.random() * 160 - 80) + 'px');
+
+    box.appendChild(el);
+    setTimeout(() => el.remove(), 18000);
+  }
+
+  function applySettings() {
+    $('#hearts').style.display = state.settings.hearts ? '' : 'none';
+    tick();
+  }
+
+  /* =========================================================
+     RENDER STATIC PARTS
+     ========================================================= */
+  function renderStatic() {
+    $('#heroNames').textContent = `${state.you} & ${state.partner}`;
+    renderNextMilestone();
+    renderMilestones();
+    renderGallery();
+    renderSettings();
+    $('#topbarBadge').textContent = '💛 ' + daysTogether().toLocaleString('vi-VN') + ' ngày';
+  }
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  function boot() {
+    renderStatic();
+    showQuote();
+    applySettings();
+    tick();
+
+    setInterval(tick, 1000);
+    setInterval(spawnHeart, 1400);
+    for (let i = 0; i < 6; i++) setTimeout(spawnHeart, i * 320);
+
+    // Resync khi quay lại tab
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) tick();
+    });
+  }
+
+  boot();
+
+})();
+</script>
+</body>
+</html>
